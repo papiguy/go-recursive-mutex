@@ -1,21 +1,31 @@
 package recmutex
 
 import (
+	"bytes"
+	"runtime"
+	"strconv"
 	"sync"
 	"time"
-
-	"github.com/huandu/goroutine"
 )
+
+func getGID() uint64 {
+	b := make([]byte, 64)
+	b = b[:runtime.Stack(b, false)]
+	b = bytes.TrimPrefix(b, []byte("goroutine "))
+	b = b[:bytes.IndexByte(b, ' ')]
+	n, _ := strconv.ParseUint(string(b), 10, 64)
+	return n
+}
 
 type RecursiveMutex struct {
 	mutex            sync.Mutex
 	internalMutex    sync.Mutex
-	currentGoRoutine int64
+	currentGoRoutine uint64
 	lockCount        uint64
 }
 
 func (rm *RecursiveMutex) Lock() {
-	goRoutineID := goroutine.GoroutineId()
+	goRoutineID := getGID()
 
 	for {
 		rm.internalMutex.Lock()

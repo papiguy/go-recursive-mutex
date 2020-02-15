@@ -2,10 +2,9 @@ package main
 
 import (
 	"fmt"
+	"go-recursive-mutex"
 	"sync"
 	"time"
-
-	"github.com/90TechSAS/go-recursive-mutex"
 )
 
 func main() {
